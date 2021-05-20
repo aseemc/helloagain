@@ -1,6 +1,15 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, SectionList, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View, 
+  SafeAreaView, 
+  SectionList, 
+  Image, 
+  TouchableOpacity, 
+  ActivityIndicator, 
+  Alert,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { collectReward, fetchRewards } from './store/bounties/actions';
 import { rewardsSelector, collectedRewardsSelector, isFetchingRewardsSelector } from './store/bounties/selectors';
@@ -17,6 +26,31 @@ export default () => {
     dispatch(fetchRewards())
   }, []);
 
+  const redeemAlert = ({ item }) => {
+    const {
+      bounty_redeem_alert_header,
+      bounty_redeem_alert_text,
+      redeem_success_alert_text
+    } = item;
+
+    Alert.alert(
+      bounty_redeem_alert_header,
+      bounty_redeem_alert_text,
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => {
+          dispatch(collectReward(item));
+          alert(redeem_success_alert_text);
+        } }
+      ]
+    );
+  }
+    
+
   const SectionHeader = ({ title }) => (
     <View style={{ height: 30, justifyContent: 'center', backgroundColor: 'lightgrey', borderRadius: 5, paddingLeft: 5 }}>
       <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{title}</Text>
@@ -24,7 +58,7 @@ export default () => {
   )
 
   const SectionItem = ({ item }) => {
-    const { name, pictures, needed_points } = item;
+    const { name, pictures, needed_points, redeem_count } = item;
 
     return (
       <View style={{ flexDirection: 'row', padding: 8, justifyContent: 'center', alignItems: 'center', height: 65, width: '100%', flex: 1 }}>
@@ -38,14 +72,14 @@ export default () => {
           </View>
           <Text style={{ fontSize: 12, color: 'grey' }}>Points needed: {needed_points}</Text>
         </View>
-        <View style={{ justifyContent: 'center', alignItems: 'center', marginLeft: 8 }}>
+        {!redeem_count && <View style={{ justifyContent: 'center', alignItems: 'center', marginLeft: 8 }}>
           <TouchableOpacity 
             style={{ height: 30, backgroundColor: 'bisque', justifyContent: 'center', alignItems: 'center', borderRadius: 5, paddingHorizontal: 5 }}
-            onPress={() => dispatch(collectReward(item))}
+            onPress={() => redeemAlert({ item })}
           >
             <Text style={{ fontSize: 12 }}>Redeem</Text>
           </TouchableOpacity>
-        </View>
+        </View>}
       </View>
     )
   }
@@ -54,6 +88,7 @@ export default () => {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size={'large'} color={'black'} />
+        <Text style={{ fontSize: 14 }}>Fetching rewards...</Text>
       </View>
     )
   }
@@ -78,7 +113,9 @@ export default () => {
         style={{ width: '100%' }}
         sections={DATA}
         keyExtractor={(item, index) => item + index}
-        renderItem={({ item }) => <SectionItem item={item} />}
+        renderItem={({ item }) => {
+          return <SectionItem item={item} />
+        }}
         renderSectionHeader={({ section: { title } }) => <SectionHeader title={title} />}
         showsVerticalScrollIndicator={false}
     />
