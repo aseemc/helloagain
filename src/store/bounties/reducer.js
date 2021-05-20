@@ -21,17 +21,18 @@ export default (state = initialState, { type, payload, error }) => {
       }
     
     case FETCH_REWARDS_SUCCESS:
-      if (payload.length) {
-        payload.reduce((acc, item) => {
-          acc[item.id] = item;
+      let data = {};
 
+      if (payload.length) {
+        data = payload.reduce((acc, item) => {
+          acc[item.id] = item;
           return acc;
         }, {});
       }
       return {
         ...state,
         isFetchingRewards: false,
-        rewards: payload
+        rewards: data
       }
 
     case FETCH_REWARDS_FAILURE:
