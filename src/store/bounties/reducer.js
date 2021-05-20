@@ -7,9 +7,9 @@ import {
 
 const initialState = {
   isFetchingRewards: false,
-  rewards: null,
+  rewards: [],
   error: null,
-  collectedRewards: null,
+  collectedRewards: [],
 };
 
 export default (state = initialState, { type, payload, error }) => {
@@ -21,18 +21,10 @@ export default (state = initialState, { type, payload, error }) => {
       }
     
     case FETCH_REWARDS_SUCCESS:
-      let data = {};
-
-      if (payload.length) {
-        data = payload.reduce((acc, item) => {
-          acc[item.id] = item;
-          return acc;
-        }, {});
-      }
       return {
         ...state,
         isFetchingRewards: false,
-        rewards: data
+        rewards: payload
       }
 
     case FETCH_REWARDS_FAILURE:
