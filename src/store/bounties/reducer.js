@@ -21,6 +21,13 @@ export default (state = initialState, { type, payload, error }) => {
       }
     
     case FETCH_REWARDS_SUCCESS:
+      if (payload.length) {
+        payload.reduce((acc, item) => {
+          acc[item.id] = item;
+
+          return acc;
+        }, {});
+      }
       return {
         ...state,
         isFetchingRewards: false,
@@ -44,6 +51,6 @@ export default (state = initialState, { type, payload, error }) => {
       }
   
     default:
-      break;
+      return state;
   }
 }
