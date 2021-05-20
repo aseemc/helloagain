@@ -1,0 +1,17 @@
+{
+  "labels": {
+    "points_needed": "Points needed",
+    "redeem_button": "Redeem"
+  },
+  "alert": {
+    "ok_title": "Ok",
+    "cancel_title": "Cancel"
+  },
+  "section_titles": {
+    "available_rewards": "Available rewards",
+    "redeemed_rewards": "Redeemed rewards"
+  },
+  "misc": {
+    "fetching_rewards": "Fetching rewards..."
+  }
+}

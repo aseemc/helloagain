@@ -5,14 +5,15 @@ import {
   View, 
   SafeAreaView, 
   SectionList, 
-  Image, 
-  TouchableOpacity, 
   ActivityIndicator, 
   Alert,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { SectionHeader, SectionItem } from './components';
 import { collectReward, fetchRewards } from './store/bounties/actions';
 import { rewardsSelector, collectedRewardsSelector, isFetchingRewardsSelector } from './store/bounties/selectors';
+import { appStrings } from './localization';
 
 export default () => {
   const dispatch = useDispatch();
@@ -22,9 +23,16 @@ export default () => {
     isFetchingRewards: isFetchingRewardsSelector(state),
   }));
 
+  const { 
+    alert: { ok_title, cancel_title },
+    section_titles: { available_rewards, redeemed_rewards },
+    misc: { fetching_rewards }
+  } = appStrings;
+
   useEffect(() => {
     dispatch(fetchRewards())
   }, []);
+  
 
   const redeemAlert = ({ item }) => {
     const {
@@ -38,71 +46,38 @@ export default () => {
       bounty_redeem_alert_text,
       [
         {
-          text: "Cancel",
+          text: cancel_title,
           onPress: () => console.log("Cancel Pressed"),
           style: "cancel"
         },
-        { text: "OK", onPress: () => {
+        { text: ok_title, onPress: () => {
           dispatch(collectReward(item));
           alert(redeem_success_alert_text);
         } }
       ]
     );
   }
-    
-
-  const SectionHeader = ({ title }) => (
-    <View style={{ height: 30, justifyContent: 'center', backgroundColor: 'lightgrey', borderRadius: 5, paddingLeft: 5 }}>
-      <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{title}</Text>
-    </View>
-  )
-
-  const SectionItem = ({ item }) => {
-    const { name, pictures, needed_points, redeem_count } = item;
-
-    return (
-      <View style={{ flexDirection: 'row', padding: 8, justifyContent: 'center', alignItems: 'center', height: 65, width: '100%', flex: 1 }}>
-        <Image
-          style={{ borderRadius: 5, width: 50, height: 50 }}
-          source={pictures.length ? { uri: pictures[0].image } : require('../assets/image_placeholder.png')}
-        />
-        <View style={{ flex: 1, justifyContent: 'space-evenly', marginLeft: 8 }}>
-          <View style={{ justifyContent: 'center', flex: 1 }}>
-            <Text style={{ fontSize: 14, flexWrap: 'wrap' }}>{name}</Text>
-          </View>
-          <Text style={{ fontSize: 12, color: 'grey' }}>Points needed: {needed_points}</Text>
-        </View>
-        {!redeem_count && <View style={{ justifyContent: 'center', alignItems: 'center', marginLeft: 8 }}>
-          <TouchableOpacity 
-            style={{ height: 30, backgroundColor: 'bisque', justifyContent: 'center', alignItems: 'center', borderRadius: 5, paddingHorizontal: 5 }}
-            onPress={() => redeemAlert({ item })}
-          >
-            <Text style={{ fontSize: 12 }}>Redeem</Text>
-          </TouchableOpacity>
-        </View>}
-      </View>
-    )
-  }
 
   if (isFetchingRewards || !allRewards) {
+    const { activityView } = styles;
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={activityView}>
         <ActivityIndicator size={'large'} color={'black'} />
-        <Text style={{ fontSize: 14 }}>Fetching rewards...</Text>
+        <Text style={{ fontSize: 14 }}>{fetching_rewards}</Text>
       </View>
     )
   }
 
   const DATA = [
     {
-      title: "Available rewards",
+      title: available_rewards,
       data: allRewards
     },
   ];
 
   if (collectedRewards.length) {
     DATA.unshift({
-      title: "Redeemed rewards",
+      title: redeemed_rewards,
       data: collectedRewards
     })
   }
@@ -114,7 +89,7 @@ export default () => {
         sections={DATA}
         keyExtractor={(item, index) => item + index}
         renderItem={({ item }) => {
-          return <SectionItem item={item} />
+          return <SectionItem item={item} redeemAlert={redeemAlert} />
         }}
         renderSectionHeader={({ section: { title } }) => <SectionHeader title={title} />}
         showsVerticalScrollIndicator={false}
@@ -131,4 +106,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 8
   },
+  activityView: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center'
+  }
 });
