@@ -1,10 +1,10 @@
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import thunk from 'redux-thunk';
 
-import bountiesReducer from "./bounties/reducer";
+import loyaltyRewardsReducer from "./loyaltyRewards/reducer";
 
 const rootReducer = combineReducers({
-  bounties: bountiesReducer,
+  loyaltyRewards: loyaltyRewardsReducer,
 });
 
 export default createStore(rootReducer, applyMiddleware(thunk));

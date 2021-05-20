@@ -11,8 +11,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 import { SectionHeader, SectionItem } from './components';
-import { collectReward, fetchRewards } from './store/bounties/actions';
-import { rewardsSelector, collectedRewardsSelector, isFetchingRewardsSelector } from './store/bounties/selectors';
+import { collectReward, fetchRewards } from './store/loyaltyRewards/actions';
+import { rewardsSelector, collectedRewardsSelector, isFetchingRewardsSelector } from './store/loyaltyRewards/selectors';
 import { appStrings } from './localization';
 
 export default () => {
