@@ -12,12 +12,14 @@ export default () => {
     collected: collectedRewards(state),
   }));
 
+  console.log('=>>>>> ', rewards);
+
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
       <Button title={"fetch data"} onPress={() => dispatch(fetchRewards())} />
-      
+      <Text>{JSON.stringify(rewards)}</Text>
     </View>
   );
 }
